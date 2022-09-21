@@ -1,0 +1,86 @@
+from django.shortcuts import render
+
+# Create your views here.
+
+#imports music
+from music.models import Album, Artist, Song
+from music.serializers import ArtistSerializer, AlbumSerializer, SongSerializer
+
+#imports rest framework
+from rest_framework.views import APIView
+from rest_framework import status
+from rest_framework.response import Response
+
+from django.http import Http404
+
+
+class ArtistDetails(APIView):
+    """ Show all details of the artist -- number of albuns and/or just songs """
+
+    def get(self, request, format=None):
+        artist = Artist.objects.all()
+        serializer = ArtistSerializer(artist, many=True)
+        return Response(serializer.data)
+
+    def post(self, request, format=None):
+        serializer = ArtistSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+#check what happened when we delete an album, do I need to delete the song?? and the other way around!
+class AlbumDetails(APIView):
+    """Show the details of the album"""
+
+    def get_object(self, pk):
+        try:
+            return Album.objects.get(pk=pk)
+        except Album.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk, format=None):
+        album = self.get_object(pk)
+        serializer = AlbumSerializer(album)
+        return Response(serializer.data)
+
+    def put(self, request, pk, format=None):
+        album = self.get_object(pk)
+        serializer = AlbumSerializer(album, data=request.data)
+        if serializer.is_valid():
+             serializer.save()
+             return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk, format=None):
+        album = self.get_object(pk)
+        album.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+class SongDetails(APIView):
+    """Show the details of the album"""
+
+    def get_object(self, pk):
+        try:
+            return Song.objects.get(pk=pk)
+        except Song.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk, format=None):
+        song = self.get_object(pk)
+        serializer = SongSerializer(song)
+        return Response(serializer.data)
+
+    def put(self, request, pk, format=None):
+        song = self.get_object(pk)
+        serializer = SongSerializer(song, data=request.data)
+        if serializer.is_valid():
+             serializer.save()
+             return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk, format=None):
+        song = self.get_object(pk)
+        song.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)

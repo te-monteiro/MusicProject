@@ -1,0 +1,3 @@
+docker exec -it musicproject_web_1 bash -- initialize container
+(inside container)
+python manage.py makemigrations
