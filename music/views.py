@@ -1,4 +1,5 @@
 from django.shortcuts import render
+import music
 
 # Create your views here.
 
@@ -6,12 +7,67 @@ from django.shortcuts import render
 from music.models import Album, Artist, Song
 from music.serializers import ArtistSerializer, AlbumSerializer, SongSerializer
 
-#imports rest framework
 from rest_framework.views import APIView
 from rest_framework import status
-from rest_framework.response import Response
-
 from django.http import Http404
+
+from rest_framework.response import Response
+from rest_framework import viewsets
+
+from rest_framework import permissions
+from music.permissions import IsArtistOrReadOnly
+from rest_framework import renderers
+from rest_framework.decorators import action
+
+class ArtistViewSet(viewsets.ModelViewSet):
+    queryset = Artist.objects.all()
+    serializer_class = ArtistSerializer
+
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsArtistOrReadOnly]
+
+    @action(detail=True, renderer_classes=[renderers.StaticHTMLRenderer])
+    def highlight(self, request, *args, **kwargs):
+        artist = self.get_object()
+        return Response(artist.highlighted)
+
+    def perform_create(self, serializer):
+        serializer.save(artist=self.request.user)
+
+class AlbumViewSet(viewsets.ModelViewSet):
+    queryset = Album.objects.all()
+    serializer_class = AlbumSerializer
+
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsArtistOrReadOnly]
+
+    @action(detail=True, renderer_classes=[renderers.StaticHTMLRenderer])
+    def highlight(self, request, *args, **kwargs):
+        album = self.get_object()
+        return Response(album.highlighted)
+
+    def perform_create(self, serializer):
+        serializer.save(artist=self.request.user)
+
+class SongViewSet(viewsets.ModelViewSet):
+    queryset = Song.objects.all()
+    serializer_class = SongSerializer
+
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsArtistOrReadOnly]
+
+    @action(detail=True, renderer_classes=[renderers.StaticHTMLRenderer])
+    def highlight(self, request, *args, **kwargs):
+        song = self.get_object()
+        return Response(song.highlighted)
+
+    def perform_create(self, serializer):
+        serializer.save(artist=self.request.user)
+
+
+
+
+
+
+
+
 
 class ArtistList(APIView):
     def get(self, request, format=None):
@@ -27,31 +83,30 @@ class ArtistList(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class ArtistDetails(APIView):
-    """ Show all details of the artist -- number of albuns and/or just songs """
-def get_object(self, pk):
-    try:
-        return Artist.objects.get(pk=pk)
-    except Artist.DoesNotExist:
-        raise Http404
+    def get_object(self, pk):
+        try:
+            return Artist.objects.get(pk=pk)
+        except Artist.DoesNotExist:
+            raise Http404
 
-def get(self, request, pk, format=None):
-    artist = self.get_object(pk)
-    serializer = ArtistSerializer(artist)
-    return Response(serializer.data)
-
-def put(self, request, pk, format=None):
-    artist = self.get_object(pk)
-    serializer = ArtistSerializer(artist, data=request.data)
-    if serializer.is_valid():
-        serializer.save()
+    def get(self, request, pk, format=None):
+        artist = self.get_object(pk)
+        serializer = ArtistSerializer(artist)
         return Response(serializer.data)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-def delete(self, request, pk, format=None):
-    artist = self.get_object(pk)
-    artist.delete()
-    return Response(status=status.HTTP_204_NO_CONTENT)
-    
+    def put(self, request, pk, format=None):
+        artist = self.get_object(pk)
+        serializer = ArtistSerializer(artist, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk, format=None):
+        artist = self.get_object(pk)
+        artist.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+        
 class AlbumList(APIView):
     def get(self, request, format=None):
         album = Album.objects.all()
