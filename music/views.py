@@ -15,7 +15,6 @@ from rest_framework.response import Response
 from rest_framework import viewsets
 
 from rest_framework import permissions
-from music.permissions import IsArtistOrReadOnly
 from rest_framework import renderers
 from rest_framework.decorators import action
 
@@ -23,9 +22,9 @@ class ArtistViewSet(viewsets.ModelViewSet):
     queryset = Artist.objects.all()
     serializer_class = ArtistSerializer
 
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsArtistOrReadOnly]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
-    @action(detail=True, renderer_classes=[renderers.StaticHTMLRenderer])
+    @action(detail=True, methods=['post', 'put', 'delete'], renderer_classes=[renderers.StaticHTMLRenderer])
     def highlight(self, request, *args, **kwargs):
         artist = self.get_object()
         return Response(artist.highlighted)
@@ -37,9 +36,9 @@ class AlbumViewSet(viewsets.ModelViewSet):
     queryset = Album.objects.all()
     serializer_class = AlbumSerializer
 
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsArtistOrReadOnly]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
-    @action(detail=True, renderer_classes=[renderers.StaticHTMLRenderer])
+    @action(detail=True,methods=['post', 'put', 'delete'], renderer_classes=[renderers.StaticHTMLRenderer])
     def highlight(self, request, *args, **kwargs):
         album = self.get_object()
         return Response(album.highlighted)
@@ -51,9 +50,9 @@ class SongViewSet(viewsets.ModelViewSet):
     queryset = Song.objects.all()
     serializer_class = SongSerializer
 
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsArtistOrReadOnly]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
-    @action(detail=True, renderer_classes=[renderers.StaticHTMLRenderer])
+    @action(detail=True,methods=['post', 'put', 'delete'], renderer_classes=[renderers.StaticHTMLRenderer])
     def highlight(self, request, *args, **kwargs):
         song = self.get_object()
         return Response(song.highlighted)
@@ -63,12 +62,7 @@ class SongViewSet(viewsets.ModelViewSet):
 
 
 
-
-
-
-
-
-
+"""
 class ArtistList(APIView):
     def get(self, request, format=None):
         artist = Artist.objects.all()
@@ -122,13 +116,13 @@ class AlbumList(APIView):
 
 #check what happened when we delete an album, do I need to delete the song?? and the other way around!
 class AlbumDetails(APIView):
-    """Show the details of the album"""
 
     def get_object(self, pk):
         try:
             return Album.objects.get(pk=pk)
         except Album.DoesNotExist:
             raise Http404
+
 
     def get(self, request, pk, format=None):
         album = self.get_object(pk)
@@ -162,7 +156,6 @@ class SongList(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class SongDetails(APIView):
-    """Show the details of the album"""
 
     def get_object(self, pk):
         try:
@@ -187,3 +180,6 @@ class SongDetails(APIView):
         song = self.get_object(pk)
         song.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+            """
+

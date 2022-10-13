@@ -3,11 +3,14 @@ from music.models import Album, Artist, Song
 
 class ArtistSerializer(serializers.ModelSerializer):
     #music = serializers.PrimaryKeyRelatedField(many=True, queryset=Artist.objects.all())
-    artist = serializers.ReadOnlyField(source='artist.get_full_name()')
+    #artist = serializers.ReadOnlyField(source='artist.get_full_name()')
 
     class Meta:
         model= Artist
-        fields = [ 'id', 'first_name', 'last_name', 'birthday', 'age', 'artist']
+        fields = [ 'id', 'first_name', 'last_name', 'birthday', 'age']
+        
+    def create(self, validated_data):
+        return Artist.objects.create(**validated_data)
 
 class AlbumSerializer(serializers.ModelSerializer):
     #music = serializers.PrimaryKeyRelatedField(many=True, queryset=Album.objects.all())
