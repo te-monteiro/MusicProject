@@ -8,6 +8,7 @@ from rest_framework import status
 from rest_framework.test import APIClient
 
 from django.contrib.auth.models import User
+import datetime
 
 
 class TestCreateArtistModel(APITestCase):
@@ -19,12 +20,9 @@ class TestCreateArtistModel(APITestCase):
     def test_create_setView_artist_instance(self):
         #client = APIClient()
         #create an user 
-        print("ABSASHFOASJFASNL2 ", self.user)
         self.client.force_authenticate(self.user)
-        print("jhjhhhjhjhj " , self.client)
         request = self.client.post('/artist/', {'first_name': 'John1', 'last_name':'Lawrence', 'birthday':'1999-11-11', 'age':'06:00:00'}, format='json')
 
-        print("AaAAAAAAAAAAAAAAAA" , request)
         self.assertEqual(request.status_code, status.HTTP_201_CREATED)
         #self.assertEqual(Artist.objects.count(), 1)
 
@@ -35,11 +33,17 @@ class TestCreateAlbumModel(APITestCase):
         self.user.save()
 
     def test_create_setView_album_instance(self):
+        artist = Artist.objects.create(
+            first_name="John1",
+            last_name="Lawrence",
+            birthday = "1999-11-11",
+            age = datetime.timedelta(days =1)
+        )
         #client = APIClient()
         self.client.force_authenticate(self.user)
 
-        request = self.client.post('/album/', {'album_name': 'Chilling', 'artist':'John1 Lawrence', 'date_released':'2020-11-11', 'style':'Jazz'}, format='json')
-        print("bbbbbbbbbbbbbbbb " , request)
+        request = self.client.post('/album/', {'album_name': 'Chilling', 'artist': artist.pk, 'date_released':'2020-11-11', 'style':'Jazz'}, format='json')
+        print("bbbbbbbbbbbbbbbb " , request.json())
         self.assertEqual(request.status_code, status.HTTP_201_CREATED)
         #self.assertEqual(Album.objects.count(), 1)
 

@@ -8,10 +8,11 @@ class Artist(models.Model):
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     birthday=models.DateField(auto_now=False, null=True, blank=True)
-    def age(self):
-        return int((datetime.date.today() - self.birthday).days / 365.25  )
     age = models.DurationField(default=None)
 
+    def age_method(self):
+        return int((datetime.date.today() - self.birthday).days / 365.25  )
+        
     def get_full_name(self):
         return f"{self.first_name} {self.last_name}"
 

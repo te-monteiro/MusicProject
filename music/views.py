@@ -30,7 +30,7 @@ class ArtistViewSet(viewsets.ModelViewSet):
         return Response(artist.highlighted)
 
     def perform_create(self, serializer):
-        serializer.save(artist=self.request.user)
+        serializer.save()
 
 class AlbumViewSet(viewsets.ModelViewSet):
     queryset = Album.objects.all()
@@ -44,7 +44,7 @@ class AlbumViewSet(viewsets.ModelViewSet):
         return Response(album.highlighted)
 
     def perform_create(self, serializer):
-        serializer.save(artist=self.request.user)
+        serializer.save()
 
 class SongViewSet(viewsets.ModelViewSet):
     queryset = Song.objects.all()
@@ -58,7 +58,7 @@ class SongViewSet(viewsets.ModelViewSet):
         return Response(song.highlighted)
 
     def perform_create(self, serializer):
-        serializer.save(artist=self.request.user)
+        serializer.save()
 
 
 
