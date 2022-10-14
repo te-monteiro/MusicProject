@@ -18,6 +18,7 @@ from rest_framework import permissions
 from rest_framework import renderers
 from rest_framework.decorators import action
 
+
 class ArtistViewSet(viewsets.ModelViewSet):
     queryset = Artist.objects.all()
     serializer_class = ArtistSerializer
@@ -32,19 +33,18 @@ class ArtistViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save()
 
+
 class AlbumViewSet(viewsets.ModelViewSet):
     queryset = Album.objects.all()
     serializer_class = AlbumSerializer
 
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
-    @action(detail=True,methods=['post', 'put', 'delete'], renderer_classes=[renderers.StaticHTMLRenderer])
+    @action(detail=True, methods=['post', 'put', 'delete'], renderer_classes=[renderers.StaticHTMLRenderer])
     def highlight(self, request, *args, **kwargs):
         album = self.get_object()
         return Response(album.highlighted)
 
-    def perform_create(self, serializer):
-        serializer.save()
 
 class SongViewSet(viewsets.ModelViewSet):
     queryset = Song.objects.all()

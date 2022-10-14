@@ -24,7 +24,7 @@ class TestCreateArtistModel(APITestCase):
         request = self.client.post('/artist/', {'first_name': 'John1', 'last_name':'Lawrence', 'birthday':'1999-11-11', 'age':'06:00:00'}, format='json')
 
         self.assertEqual(request.status_code, status.HTTP_201_CREATED)
-        #self.assertEqual(Artist.objects.count(), 1)
+
 
 class TestCreateAlbumModel(APITestCase):
     def setUp(self):
@@ -36,16 +36,19 @@ class TestCreateAlbumModel(APITestCase):
         artist = Artist.objects.create(
             first_name="John1",
             last_name="Lawrence",
-            birthday = "1999-11-11",
-            age = datetime.timedelta(days =1)
+            birthday="1999-11-11",
+            age=datetime.timedelta(days=1)
         )
-        #client = APIClient()
+
         self.client.force_authenticate(self.user)
 
-        request = self.client.post('/album/', {'album_name': 'Chilling', 'artist': artist.pk, 'date_released':'2020-11-11', 'style':'Jazz'}, format='json')
+        data = {'album_name': 'Chilling', 'artist': artist.id, 'date_released': '2020-11-11', 'style':'Jazz'}
+        request = self.client.post('/album/', data=data, format='json')
+        import pdb;pdb.set_trace()
+
         print("bbbbbbbbbbbbbbbb " , request.json())
         self.assertEqual(request.status_code, status.HTTP_201_CREATED)
-        #self.assertEqual(Album.objects.count(), 1)
+
 
 class TestCreateSongModel(APITestCase):
     def setUp(self):
